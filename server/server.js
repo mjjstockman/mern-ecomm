@@ -37,4 +37,4 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
-app.listen(PORT, () => `Server running on port ${PORT}`);
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
