@@ -16,7 +16,11 @@ if (!connectionString) {
 
 mongoose
   .connect(connectionString)
-  .then(() => console.log('MongoDB connected successfully'))
+  .then(() => {
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('MongoDB connected successfully');
+    }
+  })
   .catch((err) => {
     console.error('MongoDB connection error:', err);
     process.exit(1);
