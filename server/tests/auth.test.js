@@ -1,15 +1,27 @@
 const request = require('supertest');
 const app = require('../server');
 
+jest.mock('firebase-admin', () => ({
+  auth: {
+    verifyIdToken: jest.fn()
+  }
+}));
+
 describe('Authentication API', () => {
-  it('allows a user to log in with valid credentials', () => {
+  it('logs in a user with a valid Firebase token', () => {
+    const mockToken = 'valid-firebase-id-token';
+    
+    require('firebase-admin').auth.verifyIdToken.mockResolvedValue({
+      uid: '12121'
+    });
+
     return request(app)
       .post('/api/login')
-      .send({ email: 'test@tester.com', password: 'binGbaNg80' })
+      .send({ token: mockToken })
       .then((response) => {
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveProperty('message', 'Login successful');
-        expect(response.body).toHaveProperty('token');
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Login successful');
+        expect(response.body.uid).toBe('12121');
       });
   });
 });
