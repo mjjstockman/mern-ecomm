@@ -39,4 +39,22 @@ describe('/api/login', () => {
     expect(response.body.uid).toBe(mockUid);
     expect(admin.auth().verifyIdToken).toHaveBeenCalledWith(mockFirebaseToken);
   });
+
+  it('returns 401 with a message if Firebase token is invalid', async () => {
+    const mockFirebaseToken = 'invalid-firebase-id-token';
+
+    admin
+      .auth()
+      .verifyIdToken.mockRejectedValue(
+        new Error('Unauthorised login. Please try again.')
+      );
+
+    const response = await request(app)
+      .post('/api/login')
+      .send({ token: mockFirebaseToken });
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe('Unauthorised login. Please try again.');
+    expect(admin.auth().verifyIdToken).toHaveBeenCalledWith(mockFirebaseToken);
+  });
 });
