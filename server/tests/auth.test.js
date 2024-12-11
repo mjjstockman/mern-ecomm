@@ -25,6 +25,10 @@ afterAll(async () => {
   jest.resetAllMocks();
 });
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('/api/login', () => {
   it('logs in a user with a valid Firebase token', async () => {
     const mockFirebaseToken = 'valid-firebase-id-token';
@@ -88,6 +92,8 @@ describe('/api/login', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe('Token is required for login.');
+
+    // Ensure verifyIdToken is not called when no token is provided
     expect(admin.auth().verifyIdToken).not.toHaveBeenCalled();
   });
 
