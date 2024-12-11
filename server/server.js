@@ -28,12 +28,10 @@ mongoose
     process.exit(1);
   });
 
-// Firebase Admin Initialization
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-// Express App Setup
 const app = express();
 
 app.use(helmet());
