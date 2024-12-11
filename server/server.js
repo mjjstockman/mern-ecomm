@@ -39,7 +39,7 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: [
       'Content-Type',
@@ -63,6 +63,12 @@ app.get('/api/test', (_, res) => {
 app.post('/api/login', async (req, res) => {
   const { token } = req.body;
 
+  if (!token) {
+    return res.status(400).send({
+      message: 'Token is required for login.'
+    });
+  }
+
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
@@ -72,9 +78,19 @@ app.post('/api/login', async (req, res) => {
       uid: uid
     });
   } catch (error) {
-    res.status(401).send({
-      message: 'Unauthorised login. Please try again.'
-    });
+    if (error.code === 'auth/invalid-id-token') {
+      res.status(401).send({
+        message: 'Invalid Firebase token. Please try again.'
+      });
+    } else if (error.code === 'auth/expired-token') {
+      res.status(401).send({
+        message: 'Token expired. Please try again.'
+      });
+    } else {
+      res.status(401).send({
+        message: 'Unauthorised login. Please try again.'
+      });
+    }
   }
 });
 
