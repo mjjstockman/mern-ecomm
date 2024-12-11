@@ -73,7 +73,7 @@ app.post('/api/login', async (req, res) => {
     });
   } catch (error) {
     res.status(401).send({
-      error: 'Unauthorised'
+      message: 'Unauthorised login. Please try again.'
     });
   }
 });
